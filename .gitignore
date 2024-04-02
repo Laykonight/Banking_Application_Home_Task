@@ -1,0 +1,16 @@
+#Ignore_everything
+*
+
+#exception_rule
+!*.jsx
+!*.js
+!.gitignore
+!*.html
+!*.md
+!*.json
+!*.css
+!*.env
+!*/
+
+/Server/node_modules
+/Client/node_modules
