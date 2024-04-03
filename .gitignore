@@ -4,12 +4,14 @@
 #exception_rule
 !*.jsx
 !*.js
+!*.mjs
 !.gitignore
 !*.html
 !*.md
 !*.json
 !*.css
 !*.env
+!*.svg
 !*/
 
 /Server/node_modules
