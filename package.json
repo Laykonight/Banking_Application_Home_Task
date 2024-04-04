@@ -1,0 +1,13 @@
+{
+  "name": "banking_application_home_task",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd Client && npm run dev",
+    "server": "cd Server && npm start",
+    "start": "concurrently \"npm run client\" \"npm run server\""
+  },
+  "author": "",
+  "license": "ISC"
+}

@@ -46,11 +46,13 @@ startServer().then(() => {
 // dbHandler.dbStartup();
 
 app.post('/login', async (req, res) => {
-    const email = req.body.email;
-    const password = req.body.password;
+    const email = req.body.loginData.email;
+    const password = req.body.loginData.password;
     const keys = ['password'];
 
-    const hashedPassword = dbHandler.getDocumentValues(email, keys, ACCOUNTS_COLLECTION);
+    const values = await dbHandler.getDocumentValues(email, keys, ACCOUNTS_COLLECTION);
+
+    const hashedPassword = values.password;
     if (!hashedPassword) {
         res.status(401).json();
         return;
@@ -61,22 +63,22 @@ app.post('/login', async (req, res) => {
         return;
     }
     const token = jwt.sign({email: email}, process.env.JWT_SECRET_KEY, {expiresIn: EXP_TOKEN});
-    res.setHeader('Authorization', `Bearer ${token}`);
-    res.json(); // todo >>>>>>>>>> move to account page in front
+    // res.setHeader('Authorization', `Bearer ${token}`);
+    res.json({accessToken: token}); // todo >>>>>>>>>> move to account page in front
 
 });
 
-app.post('signup', async (req, res) =>{
-    const accountData = req.body.accountData;
-    bcrypt.hash(accountData.password, SALT_ROUNDS, (error, hashedPassword) => { // password must be string
+app.post('/signup', (req, res) =>{
+    const accountData = req.body.signupData;
+    bcrypt.hash(accountData.password, SALT_ROUNDS, async (error, hashedPassword) => { // password must be string
         if (error){
             res.status(500).json('internal server error');
         }
         accountData.password = hashedPassword;
-        const signupResult = dbHandler.addNewDocument(accountData, ACCOUNTS_COLLECTION);
+        const signupResult = await dbHandler.addNewDocument(accountData, ACCOUNTS_COLLECTION);
         if (!signupResult){
             res.status(409).json(); // todo >>>>>>>>>> email already exist error message in front
-            return;
+            // return;
         }
     });
 
@@ -90,12 +92,9 @@ app.get('/accountData',auth.authenticateToken, async (req, res) => {
         res.status(400).json('missing request data parameters');
         return;
     }
-    const requestedDataArray = requestedData.split(',');
+    const keys = requestedData.split(',');
     try {
-        const keys = ['balance', 'transactions'];
-        // const data = await dbHandler.getAccountData(requestedDataArray, email);
         const data = await dbHandler.getDocumentValues(email, keys, ACCOUNTS_COLLECTION);
-
         res.json(data); // todo >>>>>>>>>> move to dashboard page in front
     } catch (error){
         res.status(500).json('internal server error');
@@ -107,6 +106,3 @@ process.on('SIGINT', async () => {
    process.exit(0);
 });
 
-// app.listen(PORT, () => {
-//     console.log('server listening on port:', PORT);
-// })

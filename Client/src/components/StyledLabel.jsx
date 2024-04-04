@@ -5,7 +5,9 @@ export const StyledLabel = ({ classNameFlex, classNameLabel, htmlFor, labelText 
         <div className={`d-flex p-0 ${classNameFlex}`}>
             <label
                 className={`flex-grow-0 ${classNameLabel}`}
-                htmlFor={`${htmlFor}`}>
+                htmlFor={`${htmlFor}`}
+                style={{ zIndex: '100' }}
+            >
                 {labelText}
             </label>
         </div>

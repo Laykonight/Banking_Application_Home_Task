@@ -2,7 +2,7 @@
 import jwt from 'jsonwebtoken';
 
 const verifyToken = (token) => {
-    jwt.verify(token, process.env.JWT_SECRET_KEY, (error, user) =>{
+    return jwt.verify(token, process.env.JWT_SECRET_KEY, (error, user) =>{
        if (error){
            return null;
        }

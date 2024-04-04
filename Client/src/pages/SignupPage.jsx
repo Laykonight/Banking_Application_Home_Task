@@ -1,11 +1,14 @@
 import React, {useState} from 'react'
-import bankLogo from '../assets/BankLogoFrame.svg';
+import bankLogo from '../assets/BankLogoHeader.svg';
 import israelFlag from '../assets/IsraelFlag.svg';
 import reactFlag from '../assets/react.svg';
+import waterMark from '../assets/waterMark.svg'
 import {StyledInputRow} from "../components/StyledInputRow.jsx";
 import {StyledLabel} from "../components/StyledLabel.jsx";
 import {StyledInput} from "../components/StyledInput.jsx";
 import {StyledDropdownItem} from "../components/StyledDropdownItem.jsx";
+import {StyledTab} from "../components/StyledTab.jsx";
+import {StyledSection} from "../components/StyledSection.jsx";
 
 
 export const SignupPage = () => {
@@ -28,44 +31,45 @@ export const SignupPage = () => {
 
 
     return (
-        <div className='container p-0 m-0'>
-            <div className='
-            d-flex
-            justify-content-start
-            align-items-center'>
-                <div className='flex-grow-1'>
-                    <img src={bankLogo} alt='Bank logo'/>
-                    <span>myBank</span>
-                </div>
-            </div>
+        <div className='signupPage gradient container p-0 m-0 min-vw-100 min-vh-100'>
+            <StyledSection>
+                <img src={bankLogo} alt='Bank logo'/>
+            </StyledSection>
             <div className='
             row
             justify-content-around
-            align-items-center'>
-                <center className='col'>
+            align-items-center'
+            >
+                <center className='col-4 text-start sideText'
+                >
                     Experience the<br/>
                     Future of Banking
                 </center>
-                <div className='col'>
-                    <div className='card'>
-                        <div className='card-body text-center'>
-                            {isSignupForm ? (
-                                <h5>
-                                    Let's Get Started
-                                </h5>
-                            ) : (
-                                <h5>
-                                    Welcome Back
-                                </h5>
-                            )}
+                <div className='col'
+                     style={{ zIndex: '100' }}>
+                    <div className='signupCard card-transperaant bg-white bg-opacity-75 rounded-5'
+                         style={{ zIndex: '100' }}>
+                        <div className='card-body text-center'
+                             style={{ zIndex: '100' }}>
+                            <h3>
+                                {isSignupForm ? ("Let's Get Started") : ("Welcome Back")}
+                            </h3>
 
-                            <div>
-                                <button>
-                                    sign up
-                                </button>
-                                <button>
-                                    sign in
-                                </button>
+                            <div className='d-flex justify-content-center'>
+                                <StyledTab
+                                    textColor='primary'
+                                    type='button'
+                                    onClick={() => setIsSignupForm(true)}
+                                    isActive={isSignupForm}
+                                    text='Sign Up'
+                                />
+                                <StyledTab
+                                    textColor='primary'
+                                    type='button'
+                                    onClick={() => setIsSignupForm(false)}
+                                    isActive={!isSignupForm}
+                                    text='Sign in'
+                                />
                             </div>
                             <div className='container'>
                                 <StyledInputRow>
@@ -138,7 +142,6 @@ export const SignupPage = () => {
                                                 onChange={(e) => setMobileNumber(e.target.value)}
                                                 id='phone'
                                             />
-                                            />
                                         </div>
                                     </StyledInputRow>
 
@@ -146,22 +149,33 @@ export const SignupPage = () => {
 
                                 {!isSignupForm && signInError && (
                                     <div className='d-flex'>
-                                        <div className='flex-grow-0 text-danger'>
+                                        <div
+                                            className='flex-grow-0 text-danger'
+                                            style={{ zIndex: '100' }}
+                                        >
                                             {`${signInError}`}
                                         </div>
                                     </div>
                                 )}
                             </div>
-                            <div>
-                                <button>
+                            <div style={{ zIndex: '100' }}
+                            >
+                                <button
+                                    className='btn btn-lg btn-outline-primary'
+                                    type='button'
+                                    onClick={() => console.log('clicked')}
+                                    style={{ zIndex: '100' }}
+                                >
                                     Sign In
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
+            <StyledSection>
+                <img src={waterMark} alt='Bank logo'/>
+            </StyledSection>
         </div>
     )
 }

@@ -9,6 +9,7 @@ export const StyledInput = ({ className, type, placeholder, onChange, value, id 
             id={`${id}`}
             onChange={onChange}
             placeholder={`${placeholder}`}
+            style={{ zIndex: '100' }}
         />
     )
 }
