@@ -1,15 +1,8 @@
-// require('dotenv').config();
-// const jwt = require('jsonwebtoken');
-// const express = require('express');
-// const bcrypt = require('bcrypt');
-// const cookieParser = require('cookie-parser');
-// const dbHandler = require('./dbHandler.mjs');
-// const auth = require('./auth');
+import cors from 'cors';
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import express from 'express';
 import bcrypt from 'bcrypt';
-import cookieParser from 'cookie-parser';
 import * as dbHandler from './dbHandler.mjs';
 import * as auth from './auth.mjs';
 
@@ -20,7 +13,13 @@ const SALT_ROUNDS = 10;
 const ACCOUNTS_COLLECTION = 'Accounts';
 
 app.use(express.json());
-app.use(cookieParser());
+app.use(cors());
+
+const corsOptions = {
+    origin: 'http://localhost:5173', // Replace with your frontend origin
+    credentials: true, // Include cookies for authorized requests
+    optionsSuccessStatus: 200 // Necessary for preflight requests
+};
 
 async function startServer() {
     try {
@@ -43,7 +42,6 @@ startServer().then(() => {
     console.error('Error starting server:', error);
     process.exit(1);
 });
-// dbHandler.dbStartup();
 
 app.post('/login', async (req, res) => {
     const email = req.body.loginData.email;

@@ -12,6 +12,7 @@
 !*.css
 !*.env
 !*.svg
+!*.png
 !*/
 
 /Server/node_modules

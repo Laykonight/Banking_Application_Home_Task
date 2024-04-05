@@ -11,7 +11,7 @@ body{
 .sideText {
     font-style: normal;
     font-weight: 600;
-    font-size: 30px;
+    font-size:46px;
     line-height: 69px;
     margin-left: 10%;
     display: flex;
@@ -24,14 +24,20 @@ body{
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
-.content {
-    z-index: 100;
-}
+
 
 .signupPage {
     background-image: url("/home/chen/git/Banking_Application_Home_Task/Client/src/assets/signupBackgroung.png");
     background-size: cover;
      position: relative;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.verificationPage {
+    background-image: linear-gradient(to left, rgb(206, 225, 255) 0%, rgba(242, 246, 252) 100%);
+    background-size: cover;
+    position: relative;
     overflow: hidden;
     z-index: 0;
 }
@@ -50,6 +56,17 @@ body{
 .signupCard {
     margin: 0 20% 0 20%;
     z-index: 100;
-    /*filter: blur(5px);*/
-    /*box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.3);*/
+}
+
+.content {
+    z-index: 100;
+}
+
+.passcodeBox {
+    border: 2px solid #B6B6B8;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    min-height: 75px;
+    z-index: 100;
 }
