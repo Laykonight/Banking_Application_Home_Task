@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import {StyledHeader} from "../components/StyledHeader.jsx";
 import {StyledFooter} from "../components/StyledFooter.jsx";
 import {StyledMiddleSection} from "../components/StyledMiddleSection.jsx";
+import {StyledButton} from "../components/StyledButton.jsx";
 // import { Button, Col, Container, Form, Form.Group, Row } from 'react-bootstrap';
 
 export const VerificationPage = () => {
@@ -9,43 +10,48 @@ export const VerificationPage = () => {
     const [errorMessage, setErrorMessage] = useState('');
     const inputRefs = useRef([]); // Array to hold references to input fields
 
+    const handleBackspace = (keyEvent, index) => {
+        if (keyEvent.key === 'Backspace') {
+            const newPasscode = [...passcode];
+            console.log('Backspace pressed!'); // Log backspace even if input is empty
+            if (index > 0) {
+                if (newPasscode[index] === ''){
+                    --index;
+                    inputRefs.current[index].focus();
+                }
+                newPasscode[index] = '';
+                setPasscode(newPasscode);
+            }
+        }
+    };
+
     const handlePasscodeChange = (index, event) => {
         const newPasscode = [...passcode];
         if (event.target.value !== '') {
             newPasscode[index] = event.target.value;
             if (index < passcode.length - 1) {
-                inputRefs.current[index + 1].focus(); // Move focus to next if not empty
-            }
-        } else { // Handle backspace or any empty value
-            newPasscode[index] = '';
-            // Find the next non-empty input to focus on (if any)
-            let nextNonEmptyIndex = index - 1;
-            while (nextNonEmptyIndex >= 0 && newPasscode[nextNonEmptyIndex] === '') {
-                nextNonEmptyIndex--;
-            }
-            if (nextNonEmptyIndex >= 0) {
-                inputRefs.current[nextNonEmptyIndex].focus();
+                inputRefs.current[index + 1].focus();
             }
         }
         setPasscode(newPasscode);
     };
 
     const handleVerify = () => {
-        // Implement verification logic here
-        // This could involve sending the passcode to the backend for validation
-        // and handling success or failure scenarios
         setErrorMessage(''); // Clear any previous errors
 
-        const joinedPasscode = passcode.join('');
-        if (joinedPasscode.length !== 6) {
+        const passcodeTry = passcode.join('');
+        console.log('Passcode attempt:', passcodeTry);
+
+        if (passcodeTry.length !== 6) {
             setErrorMessage('Passcode must be 6 digits long.');
             return;
         }
 
         // Simulate successful verification for now
-        console.log('Passcode verified successfully!', joinedPasscode);
+        console.log('Passcode verified successfully!', passcodeTry);
         // Redirect to the next page or display a success message
     };
+
 
     return (
         <div className='verificationPage container p-0 m-0 min-vw-100 min-vh-100'>
@@ -69,60 +75,31 @@ export const VerificationPage = () => {
                             {passcode.map((value, index) => (
                                 <input
                                     className='passcodeBox form-control rounded m-2 text-center p-0'
-                                    key={index} // Key for react
-                                    ref={(el) => (inputRefs.current[index] = el)} // Store reference
+                                    key={index}
+                                    ref={(el) => (inputRefs.current[index] = el)}
                                     type='text'
-                                    maxLength={1} // Limit input to 1 character
+                                    maxLength={1}
                                     value={value}
+                                    onKeyDown={(key) => handleBackspace(key, index)}
                                     onChange={(e) => handlePasscodeChange(index, e)}
                                 />
                             ))}
-                            {/*<input*/}
-                            {/*    className='passcodeBox form-control rounded mx-2'*/}
-                            {/*    type='text'*/}
-                            {/*    maxLength={1}*/}
-                            {/*    onChange={(e) => handlePasscodeChange(index, e)}*/}
-                            {/*/>*/}
-                            {/*<input*/}
-                            {/*    className='passcodeBox form-control rounded mx-2'*/}
-                            {/*    type='text'*/}
-                            {/*    maxLength={1}*/}
-                            {/*    onChange={(e) => handlePasscodeChange(index, e)}*/}
-                            {/*/>*/}
-                            {/*<input*/}
-                            {/*    className='passcodeBox form-control rounded mx-2'*/}
-                            {/*    type='text'*/}
-                            {/*    maxLength={1}*/}
-                            {/*    onChange={(e) => handlePasscodeChange(index, e)}*/}
-                            {/*/>*/}
-                            {/*<input*/}
-                            {/*    className='passcodeBox form-control rounded mx-2'*/}
-                            {/*    type='text'*/}
-                            {/*    maxLength={1}*/}
-                            {/*    onChange={(e) => handlePasscodeChange(index, e)}*/}
-                            {/*/>*/}
-                            {/*<input*/}
-                            {/*    className='passcodeBox form-control rounded mx-2'*/}
-                            {/*    type='text'*/}
-                            {/*    maxLength={1}*/}
-                            {/*    onChange={(e) => handlePasscodeChange(index, e)}*/}
-                            {/*/>*/}
-                            {/*<input*/}
-                            {/*    className='passcodeBox form-control rounded mx-2'*/}
-                            {/*    type='text'*/}
-                            {/*    maxLength={1}*/}
-                            {/*    onChange={(e) => handlePasscodeChange(index, e)}*/}
-                            {/*/>*/}
                         </div>
-                        {/*<div className='row justify-content-center align-items-center px-3'>*/}
-                        {/*    <div className='col-2 passcodeBox'>*/}
+                        <div className='row'>
+                            <StyledButton
+                                className='col'
+                                bsSize='lg'
+                                bsColor='primary'
+                                type='button'
+                                onClick={() =>handleVerify()}
+                                text='Verify'
+                            />
+                        </div>
 
-                        {/*    </div>*/}
-                        {/*</div>*/}
                     </div>
                 </div>
             </StyledMiddleSection>
-            <StyledFooter />
+            <StyledFooter/>
         </div>
     )
 }
