@@ -50,12 +50,6 @@ export const getDocumentValues = async (documentId, keys, collectionName) => {
         });
         return extractedValues;
 
-        // const result = await collection.findOne({_id: new ObjectId(documentId)});
-        // if (result && key in result) {
-        //     return result[key];
-        // }
-        // console.log(`Key ${key} not found in the document ${documentId}`);
-        // return null;
     } catch (error) {
         console.error(`Error retrieving value from ${documentId}: `, error);
         return null;

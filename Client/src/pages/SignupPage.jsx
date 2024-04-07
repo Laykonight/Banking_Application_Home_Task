@@ -9,7 +9,7 @@ import {StyledButton} from "../components/StyledButton.jsx";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useDispatch} from "react-redux";
-import {setAccountAvailable, setToken} from "../redux/Store.jsx";
+import {setAccountAvailable, setEmail, setToken} from "../redux/Store.jsx";
 import {StyledHeader} from "../components/StyledHeader.jsx";
 import {StyledFooter} from "../components/StyledFooter.jsx";
 import {StyledMiddleSection} from "../components/StyledMiddleSection.jsx";
@@ -20,7 +20,7 @@ export const SignupPage = () => {
     const [isSignupForm, setIsSignupForm] = useState(true);
     const [signInError, setSignInError] = useState(''); // todo start ''
 
-    const [email, setEmail] = useState('');
+    const [emailInput, setEmailInput] = useState('');
     const [password, setPassword] = useState('');
     const [mobileNumber, setMobileNumber] = useState('');
     const [mobileAreaCode, setMobileAreaCode] = useState('+972');
@@ -43,7 +43,7 @@ export const SignupPage = () => {
         setMobileNumberError('');
         let isValid = true;
 
-        if (!emailRegex.test(email.trim())) {
+        if (!emailRegex.test(emailInput.trim())) {
             setEmailError('Please enter a valid email address !');
             isValid = false;
         }
@@ -66,7 +66,7 @@ export const SignupPage = () => {
     };
 
     const resetForm = () => {
-        setEmail('');
+        setEmailInput('');
         setPassword('');
         setMobileNumber('');
     }
@@ -75,7 +75,7 @@ export const SignupPage = () => {
         const isValid = isFormValid();
         if (isValid){
             const loginData = {
-                email: email.trim(),
+                email: emailInput.trim(),
                 password: password.trim()
             };
             try {
@@ -99,7 +99,7 @@ export const SignupPage = () => {
         const isValid = isFormValid();
         if (isValid){
             const signupData = {
-                email: email.trim(),
+                email: emailInput.trim(),
                 password: password.trim(),
                 phone: `${mobileAreaCode}${mobileNumber}`
             };
@@ -107,9 +107,10 @@ export const SignupPage = () => {
                 const response = await axios.post(`${SERVER_ADDRESS}signup`, {signupData});
                 console.log('Signup successful:', response.data);
                 resetForm();
+                dispatch(setEmail(emailInput));
                 navigate('/verification');
             } catch (error){
-                console.error('Signup error:', error.response.data);
+                console.error('Signup error:', error);
                 resetForm();
             }
         }
@@ -175,8 +176,8 @@ export const SignupPage = () => {
                                             className={`${emailError ? 'is-invalid' : ''}`}
                                             type='email'
                                             placeholder={emailError}
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            value={emailInput}
+                                            onChange={(e) => setEmailInput(e.target.value)}
                                             id='email'
                                         />
                                     </StyledInputRow>

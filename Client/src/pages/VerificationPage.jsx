@@ -3,12 +3,22 @@ import {StyledHeader} from "../components/StyledHeader.jsx";
 import {StyledFooter} from "../components/StyledFooter.jsx";
 import {StyledMiddleSection} from "../components/StyledMiddleSection.jsx";
 import {StyledButton} from "../components/StyledButton.jsx";
+import axios from "axios";
+import {useDispatch, useSelector} from "react-redux";
+import {useNavigate} from "react-router-dom";
+import {setToken} from "../redux/Store.jsx";
 // import { Button, Col, Container, Form, Form.Group, Row } from 'react-bootstrap';
 
 export const VerificationPage = () => {
     const [passcode, setPasscode] = useState(['', '', '', '', '', '']); // Array to store passcode digits
     const [errorMessage, setErrorMessage] = useState('');
     const inputRefs = useRef([]); // Array to hold references to input fields
+
+    const email = useSelector((state) => state.email);
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const SERVER_ADDRESS = 'http://localhost:3000/';
 
     const handleBackspace = (keyEvent, index) => {
         if (keyEvent.key === 'Backspace') {
@@ -36,20 +46,31 @@ export const VerificationPage = () => {
         setPasscode(newPasscode);
     };
 
-    const handleVerify = () => {
+
+    const handleVerify = async () => {
         setErrorMessage(''); // Clear any previous errors
 
         const passcodeTry = passcode.join('');
-        console.log('Passcode attempt:', passcodeTry);
-
-        if (passcodeTry.length !== 6) {
+        if (passcodeTry.length !== 6) { // todo <<<<<<<<<<<<< error handling with message
             setErrorMessage('Passcode must be 6 digits long.');
             return;
         }
 
-        // Simulate successful verification for now
-        console.log('Passcode verified successfully!', passcodeTry);
-        // Redirect to the next page or display a success message
+        const verification = {
+            email: email,
+            passcode: passcodeTry
+        };
+
+        try {
+            const response = await axios.post(`${SERVER_ADDRESS}verification`, {verification});
+            console.log("verification response: ", response);
+            const token = response.data.accessToken;
+            dispatch(setToken(token));
+            navigate('/');
+        } catch (error){
+            console.error('verification error:', error.response.data);
+            setPasscode(['', '', '', '', '', '']);
+        }
     };
 
 

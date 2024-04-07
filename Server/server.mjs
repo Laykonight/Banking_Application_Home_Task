@@ -11,6 +11,7 @@ const app = express();
 const EXP_TOKEN = '1d';
 const SALT_ROUNDS = 10;
 const ACCOUNTS_COLLECTION = 'Accounts';
+const verificationAccounts = {};
 
 app.use(express.json());
 app.use(cors());
@@ -34,6 +35,23 @@ async function startServer() {
         console.error('Error starting server:', error);
         process.exit(1);
     }
+}
+
+function generatePasscode(number) {
+    const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+    const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const digits = '0123456789';
+    const allChars = lowercaseLetters + uppercaseLetters + digits;
+    const allCharsLength = allChars.length;
+    const passcode = [];
+
+    for (let i = 0; i < number; i++) {
+        const randomIndex = Math.floor(Math.random() * allCharsLength);
+        const character = allChars.charAt(randomIndex);
+        passcode.push(character);
+    }
+
+    return passcode.join('');
 }
 
 startServer().then(() => {
@@ -68,20 +86,49 @@ app.post('/login', async (req, res) => {
 
 app.post('/signup', (req, res) =>{
     const accountData = req.body.signupData;
+    const passcode = 'abc123';
+    verificationAccounts[accountData.email] = {data: accountData, passcode: passcode};
+
+    console.log("verificationAccounts: ", verificationAccounts);
+
+    res.json({passcode: passcode});
+
+
+});
+
+app.post('/verification', async (req,res) => {
+    const passcodeTry = req.body.verification.passcode;
+    const email = req.body.verification.email;
+    const account = verificationAccounts[email];
+    const accountData = account.data;
+
+    console.log("accountData: ", accountData);
+
+    if (passcodeTry !== account.passcode){
+        res.status(401).json({error: 'Wrong passcode'}); // todo wrong passcode
+        return;
+    }
+
     bcrypt.hash(accountData.password, SALT_ROUNDS, async (error, hashedPassword) => { // password must be string
         if (error){
             res.status(500).json('internal server error');
         }
+        // todo sending passcode to phone number
         accountData.password = hashedPassword;
         const signupResult = await dbHandler.addNewDocument(accountData, ACCOUNTS_COLLECTION);
         if (!signupResult){
             res.status(409).json(); // todo >>>>>>>>>> email already exist error message in front
-            // return;
         }
     });
 
-    res.json(); // todo >>>>>>>>>> move to login page in front
-});
+    delete verificationAccounts[email];
+    console.log("verificationAccounts: ", verificationAccounts);
+
+    const token = jwt.sign({email: email}, process.env.JWT_SECRET_KEY, {expiresIn: EXP_TOKEN});
+
+    res.json({accessToken: token}); // todo >>>>>>>>>> move to login page in front
+
+})
 
 app.get('/accountData',auth.authenticateToken, async (req, res) => {
     const email = req.body.user.email;
