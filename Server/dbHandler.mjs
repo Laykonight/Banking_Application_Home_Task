@@ -1,7 +1,6 @@
-import {MongoClient, ObjectId} from "mongodb";
+import {MongoClient} from "mongodb";
 import * as crypto from "crypto";
 
-// const mongodb = require('mongodb');
 const uri = 'mongodb://localhost:27017';
 const dbName = 'Banking';
 const MIN_STARTING_BALANCE = 1000;
@@ -119,7 +118,6 @@ function decodeHashString(hashString){
     return Buffer.from(base64String, 'base64').toString('utf-8');
 }
 
-
 export const addNewDocument = async (accountData, collectionName) => {
     try {
         const collection = database.collection(collectionName);
@@ -131,18 +129,10 @@ export const addNewDocument = async (accountData, collectionName) => {
         }
         const data = { ...accountData};
         delete data.email;
-        // const {[email]: omitted, ...data} = accountData;
         data['balance'] = {USD: generateRandomNumber(MIN_STARTING_BALANCE, MAX_STARTING_BALANCE)};
-        data['transactions'] = [];
+        data['transactions'] = [{email: 'moshe@gmail.com', currency: 'USD', amount: '500', sign: '+'}];
         await collection.insertOne({_id: documentId})
-        console.log("data = ", data);
-
         await addFieldsToDocument(data, documentId, collectionName);
-        // const objectId = new ObjectId(documentId);
-        // await collection.updateOne(
-        //     {_id: objectId},
-        //     {set: data}
-        // );
 
         return true;
     } catch (error) {

@@ -3,7 +3,7 @@ import {StyledInputRow} from "./StyledInputRow.jsx";
 import {StyledLabel} from "./StyledLabel.jsx";
 import {StyledDropdownItem} from "./StyledDropdownItem.jsx";
 import israelFlag from "../assets/IsraelFlag.svg";
-import reactFlag from "../assets/react.svg";
+import usaFlag from "../assets/united-states-svgrepo-com.svg";
 import {StyledInput} from "./StyledInput.jsx";
 
 export const MobilePhoneInput = ({
@@ -36,9 +36,9 @@ export const MobilePhoneInput = ({
                         onClick={() => handleSetChosenFlag(israelFlag, '+972')}
                     />
                     <StyledDropdownItem
-                        src={reactFlag}
+                        src={usaFlag}
                         alt='react flag'
-                        onClick={() => handleSetChosenFlag(reactFlag, '+react')}
+                        onClick={() => handleSetChosenFlag(usaFlag, '+1')}
                     />
                 </ul>
                 <StyledInput

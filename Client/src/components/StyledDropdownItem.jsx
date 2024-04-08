@@ -1,5 +1,4 @@
 import React from 'react'
-import israelFlag from "../assets/IsraelFlag.svg";
 
 export const StyledDropdownItem = ({ className, src, alt, onClick }) => {
     return (

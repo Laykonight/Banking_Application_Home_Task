@@ -9,23 +9,19 @@ import {StyledButton} from "../components/StyledButton.jsx";
 import {useNavigate} from "react-router-dom";
 import axios from "axios";
 import {useDispatch} from "react-redux";
-import {setAccountAvailable, setEmail, setToken} from "../redux/Store.jsx";
+import {setAccountAvailable, setEmail, setToken, setVerification} from "../redux/Store.jsx";
 import {StyledHeader} from "../components/StyledHeader.jsx";
 import {StyledFooter} from "../components/StyledFooter.jsx";
 import {StyledMiddleSection} from "../components/StyledMiddleSection.jsx";
 
-
 export const SignupPage = () => {
-    // const [account, setAccount] = useState('');
     const [isSignupForm, setIsSignupForm] = useState(true);
     const [signInError, setSignInError] = useState(''); // todo start ''
-
     const [emailInput, setEmailInput] = useState('');
     const [password, setPassword] = useState('');
     const [mobileNumber, setMobileNumber] = useState('');
     const [mobileAreaCode, setMobileAreaCode] = useState('+972');
     const [chosenFlag, setChosenFlag] = useState(israelFlag);
-
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [mobileNumberError, setMobileNumberError] = useState('');
@@ -80,9 +76,7 @@ export const SignupPage = () => {
             };
             try {
                 const response = await axios.post(`${SERVER_ADDRESS}login`, {loginData});
-                console.log('Login successful:', response.data);
                 const token = response.data.accessToken;
-                console.log('token:', token);
 
                 dispatch(setToken(token));
                 dispatch(setAccountAvailable());
@@ -105,9 +99,9 @@ export const SignupPage = () => {
             };
             try {
                 const response = await axios.post(`${SERVER_ADDRESS}signup`, {signupData});
-                console.log('Signup successful:', response.data);
                 resetForm();
                 dispatch(setEmail(emailInput));
+                dispatch(setVerification());
                 navigate('/verification');
             } catch (error){
                 console.error('Signup error:', error);
@@ -118,7 +112,8 @@ export const SignupPage = () => {
 
     return (
         <div className='signupPage gradient container p-0 m-0 min-vw-100 min-vh-100'>
-            <StyledHeader />
+            <div className='d-flex flex-column min-vw-100 min-vh-100'>
+                <StyledHeader />
                 <StyledMiddleSection justifyContent='around'>
                     <div
                         className='
@@ -190,7 +185,7 @@ export const SignupPage = () => {
                                         />
                                         <StyledInput
                                             className={`${passwordError ? 'is-invalid' : ''}`}
-                                            type='email'
+                                            type='password'
                                             placeholder={passwordError}
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
@@ -210,12 +205,12 @@ export const SignupPage = () => {
                                     )}
                                     {!isSignupForm && signInError && //Sign In Error message
                                         (<div className='d-flex'>
-                                            <div
-                                                className='content flex-grow-0 text-danger'>
-                                                {`${signInError}`}
+                                                <div
+                                                    className='content flex-grow-0 text-danger'>
+                                                    {`${signInError}`}
+                                                </div>
                                             </div>
-                                        </div>
-                                    )}
+                                        )}
                                 </div>
                                 <div className='content'> {/*Sign Up/In Button */}
                                     <StyledButton
@@ -231,7 +226,8 @@ export const SignupPage = () => {
                         </div>
                     </div>
                 </StyledMiddleSection>
-            <StyledFooter/>
+                <StyledFooter className='mt-auto p-2' />
+            </div>
         </div>
     )
 }

@@ -6,13 +6,12 @@ import {StyledButton} from "../components/StyledButton.jsx";
 import axios from "axios";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
-import {setToken} from "../redux/Store.jsx";
-// import { Button, Col, Container, Form, Form.Group, Row } from 'react-bootstrap';
+import {setAccountAvailable, setToken} from "../redux/Store.jsx";
 
 export const VerificationPage = () => {
-    const [passcode, setPasscode] = useState(['', '', '', '', '', '']); // Array to store passcode digits
+    const [passcode, setPasscode] = useState(['', '', '', '', '', '']);
     const [errorMessage, setErrorMessage] = useState('');
-    const inputRefs = useRef([]); // Array to hold references to input fields
+    const inputRefs = useRef([]);
 
     const email = useSelector((state) => state.email);
     const dispatch = useDispatch();
@@ -23,7 +22,6 @@ export const VerificationPage = () => {
     const handleBackspace = (keyEvent, index) => {
         if (keyEvent.key === 'Backspace') {
             const newPasscode = [...passcode];
-            console.log('Backspace pressed!'); // Log backspace even if input is empty
             if (index > 0) {
                 if (newPasscode[index] === ''){
                     --index;
@@ -48,10 +46,9 @@ export const VerificationPage = () => {
 
 
     const handleVerify = async () => {
-        setErrorMessage(''); // Clear any previous errors
-
+        setErrorMessage('');
         const passcodeTry = passcode.join('');
-        if (passcodeTry.length !== 6) { // todo <<<<<<<<<<<<< error handling with message
+        if (passcodeTry.length !== 6) {
             setErrorMessage('Passcode must be 6 digits long.');
             return;
         }
@@ -63,64 +60,86 @@ export const VerificationPage = () => {
 
         try {
             const response = await axios.post(`${SERVER_ADDRESS}verification`, {verification});
-            console.log("verification response: ", response);
             const token = response.data.accessToken;
             dispatch(setToken(token));
+            dispatch(setAccountAvailable());
             navigate('/');
         } catch (error){
-            console.error('verification error:', error.response.data);
+            setErrorMessage('Wrong input, please try again.');
             setPasscode(['', '', '', '', '', '']);
         }
     };
 
-
     return (
         <div className='verificationPage container p-0 m-0 min-vw-100 min-vh-100'>
-            <StyledHeader />
-            <StyledMiddleSection justifyContent='center'>
+            <div className='d-flex flex-column min-vw-100 min-vh-100'>
+                <StyledHeader />
                 <div
-                    className='card'
+                    className='
+                d-flex
+                justify-content-center align-content-center
+                fs-5 fw-bold
+                bg-success-subtle
+                border border-black border-2 rounded
+                p-3'
                     style={{
-                        maxWidth: '40%'
+                        position: 'fixed',
+                        top: '10%',
+                        right: '10%',
+                        minHeight: '5%',
                     }}
                 >
-                    <div className='card-body'>
-                        <h2>
-                            Two Factor Authentication
-                        </h2>
-                        <h4>
-                            Enter Two-Factor<br/>
-                            Authentication Passcode
-                        </h4>
-                        <div className='input-group fs-4'>
-                            {passcode.map((value, index) => (
-                                <input
-                                    className='passcodeBox form-control rounded m-2 text-center p-0'
-                                    key={index}
-                                    ref={(el) => (inputRefs.current[index] = el)}
-                                    type='text'
-                                    maxLength={1}
-                                    value={value}
-                                    onKeyDown={(key) => handleBackspace(key, index)}
-                                    onChange={(e) => handlePasscodeChange(index, e)}
-                                />
-                            ))}
-                        </div>
-                        <div className='row'>
-                            <StyledButton
-                                className='col'
-                                bsSize='lg'
-                                bsColor='primary'
-                                type='button'
-                                onClick={() =>handleVerify()}
-                                text='Verify'
-                            />
-                        </div>
-
-                    </div>
+                    Enter passcode from backend terminal
                 </div>
-            </StyledMiddleSection>
-            <StyledFooter/>
+                <StyledMiddleSection justifyContent='center'>
+                    <div
+                        className='card'
+                        style={{
+                            maxWidth: '27%'
+                        }}
+                    >
+                        <div className='card-body text-center'>
+                            <h2 className='py-3 mt-3'>
+                                Two Factor Authentication
+                            </h2>
+                            <h4 className='py-3 mb-3'>
+                                Enter Two-Factor<br/>
+                                Authentication Passcode
+                            </h4>
+                            <div className='input-group fs-4 mt-5 mb-3'>
+                                {passcode.map((value, index) => (
+                                    <input
+                                        className='passcodeBox form-control rounded m-2 text-center p-0'
+                                        key={index}
+                                        ref={(el) => (inputRefs.current[index] = el)}
+                                        type='text'
+                                        maxLength={1}
+                                        value={value}
+                                        onKeyDown={(key) => handleBackspace(key, index)}
+                                        onChange={(e) => handlePasscodeChange(index, e)}
+                                    />
+                                ))}
+                            </div>
+                            {errorMessage !== '' && (
+                                <div className='text-danger'>
+                                    {errorMessage}
+                                </div>
+                            )}
+                            <div className='row p-3'>
+                                <StyledButton
+                                    className='col'
+                                    bsSize='lg'
+                                    bsColor='primary'
+                                    type='button'
+                                    onClick={() =>handleVerify()}
+                                    text='Verify'
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </StyledMiddleSection>
+                <StyledFooter className='mt-auto p-2' />
+            </div>
         </div>
     )
 }

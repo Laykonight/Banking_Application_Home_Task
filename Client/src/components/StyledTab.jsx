@@ -10,7 +10,6 @@ export const StyledTab = ({ className, textColor, type, onClick, isActive, text 
                 border: '0',
                 borderBottom: isActive ? '2px solid #0d6efd' : '1px solid blue',
                 fontWeight: isActive ? 'bold' : 'normal',
-                // zIndex: '100',
             }}
         >
             {text}

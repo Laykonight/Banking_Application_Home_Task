@@ -55,6 +55,8 @@ body{
 
 .signupCard {
     margin: 0 20% 0 20%;
+    max-width: 50%;
+    /*min-height: 100%;*/
     z-index: 100;
 }
 
@@ -69,6 +71,10 @@ body{
     font-weight: bold;
     min-height: 75px;
     z-index: 100;
+}
+
+.sideGradient {
+    background: linear-gradient(184.66deg, #EBF3FF 28.88%, #5095FF 103.09%);
 }
 
 

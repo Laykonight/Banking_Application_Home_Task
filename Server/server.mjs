@@ -17,9 +17,9 @@ app.use(express.json());
 app.use(cors());
 
 const corsOptions = {
-    origin: 'http://localhost:5173', // Replace with your frontend origin
-    credentials: true, // Include cookies for authorized requests
-    optionsSuccessStatus: 200 // Necessary for preflight requests
+    origin: 'http://localhost:5173',
+    credentials: true,
+    optionsSuccessStatus: 200
 };
 
 async function startServer() {
@@ -27,7 +27,6 @@ async function startServer() {
         await dbHandler.dbStartup();
         console.log('Database connection established.');
 
-        // Start listening to incoming requests
         app.listen(PORT, () => {
             console.log('Server listening on port:', PORT);
         });
@@ -75,25 +74,19 @@ app.post('/login', async (req, res) => {
     }
     const checkPassword = bcrypt.compare(password, hashedPassword);
     if (!checkPassword) {
-        res.status(401).json(); // todo >>>>>>>>>> password or email is wrong error message in front
+        res.status(401).json();
         return;
     }
     const token = jwt.sign({email: email}, process.env.JWT_SECRET_KEY, {expiresIn: EXP_TOKEN});
-    // res.setHeader('Authorization', `Bearer ${token}`);
-    res.json({accessToken: token}); // todo >>>>>>>>>> move to account page in front
-
+    res.json({accessToken: token});
 });
 
 app.post('/signup', (req, res) =>{
     const accountData = req.body.signupData;
-    const passcode = 'abc123';
+    const passcode = generatePasscode(6);
     verificationAccounts[accountData.email] = {data: accountData, passcode: passcode};
-
-    console.log("verificationAccounts: ", verificationAccounts);
-
-    res.json({passcode: passcode});
-
-
+    console.log("The passcode is:   ", passcode);
+    res.json();
 });
 
 app.post('/verification', async (req,res) => {
@@ -102,32 +95,27 @@ app.post('/verification', async (req,res) => {
     const account = verificationAccounts[email];
     const accountData = account.data;
 
-    console.log("accountData: ", accountData);
-
     if (passcodeTry !== account.passcode){
-        res.status(401).json({error: 'Wrong passcode'}); // todo wrong passcode
+        res.status(401).json({error: 'Wrong passcode'});
         return;
     }
 
-    bcrypt.hash(accountData.password, SALT_ROUNDS, async (error, hashedPassword) => { // password must be string
+    bcrypt.hash(accountData.password, SALT_ROUNDS, async (error, hashedPassword) => {
         if (error){
             res.status(500).json('internal server error');
         }
-        // todo sending passcode to phone number
         accountData.password = hashedPassword;
         const signupResult = await dbHandler.addNewDocument(accountData, ACCOUNTS_COLLECTION);
         if (!signupResult){
-            res.status(409).json(); // todo >>>>>>>>>> email already exist error message in front
+            res.status(409).json();
         }
+
+        delete verificationAccounts[email];
+
+        const token = jwt.sign({email: email}, process.env.JWT_SECRET_KEY, {expiresIn: EXP_TOKEN});
+
+        res.json({accessToken: token});
     });
-
-    delete verificationAccounts[email];
-    console.log("verificationAccounts: ", verificationAccounts);
-
-    const token = jwt.sign({email: email}, process.env.JWT_SECRET_KEY, {expiresIn: EXP_TOKEN});
-
-    res.json({accessToken: token}); // todo >>>>>>>>>> move to login page in front
-
 })
 
 app.get('/accountData',auth.authenticateToken, async (req, res) => {
@@ -140,7 +128,9 @@ app.get('/accountData',auth.authenticateToken, async (req, res) => {
     const keys = requestedData.split(',');
     try {
         const data = await dbHandler.getDocumentValues(email, keys, ACCOUNTS_COLLECTION);
-        res.json(data); // todo >>>>>>>>>> move to dashboard page in front
+        console.log("req.body.user in server: ", req.body.user);
+        console.log("data in server: ", data);
+        res.json(data);
     } catch (error){
         res.status(500).json('internal server error');
     }
