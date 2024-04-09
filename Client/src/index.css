@@ -27,7 +27,7 @@ body{
 
 
 .signupPage {
-    background-image: url("/home/chen/git/Banking_Application_Home_Task/Client/src/assets/signupBackgroung.png");
+    background-image: url("../src/assets/signupBackgroung.png");
     background-size: cover;
      position: relative;
     overflow: hidden;
